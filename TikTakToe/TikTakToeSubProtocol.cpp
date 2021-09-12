@@ -88,7 +88,14 @@ void TikTakToeSubProtocol::onMessageEnd() {
 
     if (action["type"] == "move") {
         gameModel.playersMove(action["playerID"], action["cellID"]);
-        nlohmann::json message = gameModel.updateClientState();
+        
+        nlohmann::json message;
+        if(gameModel.isGameOver(action["playerID"])){
+            message = gameModel.setGameOver();
+        } else {
+            message = gameModel.updateClientState();
+        }
+    
 
         /* // also possible
                 forEachClient([&message](SubProtocol* client) {

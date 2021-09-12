@@ -20,6 +20,8 @@
 
 #include <map>               // for operator==
 #include <nlohmann/json.hpp> // for basic_json<>::object_t, basic_json<>::v...
+#include <iostream>
+#include <easylogging++.h>
 
 TikTakToeGameModel TikTakToeGameModel::gameModel;
 
@@ -43,12 +45,46 @@ void TikTakToeGameModel::playersMove(const std::string& player, int cellID) {
     }
 }
 
+bool TikTakToeGameModel::isGameOver(const std::string& player)
+{
+    int cellValue;
+    if (player == "red") {
+            cellValue = 1;
+        } else {
+            cellValue = -1;
+    }
+    
+    if((board[0] == cellValue && board[1] == cellValue && board[2] == cellValue) ||
+       (board[3] == cellValue && board[4] == cellValue && board[5] == cellValue) ||
+       (board[6] == cellValue && board[7] == cellValue && board[8] == cellValue) ||
+       (board[0] == cellValue && board[3] == cellValue && board[6] == cellValue) ||
+       (board[1] == cellValue && board[4] == cellValue && board[7] == cellValue) ||
+       (board[2] == cellValue && board[5] == cellValue && board[8] == cellValue) ||
+       (board[0] == cellValue && board[4] == cellValue && board[8] == cellValue) ||
+       (board[2] == cellValue && board[4] == cellValue && board[6] == cellValue)
+    ){
+        VLOG(0) << "Juhu gewonnen JA juhu jaa jaaa";
+        return true;
+    }
+    return false;
+}
+
 void TikTakToeGameModel::resetBoard() {
     whosNext = 0;
     for (int i = 0; i < 9; i++) {
         board[i] = 0;
     }
 }
+
+nlohmann::json TikTakToeGameModel::setGameOver() {
+    nlohmann::json message;
+
+    message["type"] = "gameOver";
+    message["board"] = board;
+
+    return message;
+}
+
 
 nlohmann::json TikTakToeGameModel::updateClientState() {
     nlohmann::json message;

@@ -16,13 +16,17 @@ var gameState = {
 // This fills in the DOM with the initial game state
 var initializeBoard = () => {
   document.querySelector('.game-info__players-name').innerText = `${gameState.playerID} Player`;
+  updateTurn();
   updateBoard();
+}
+
+var updateTurn = () => {
+  let myTurn = gameState.whosTurn === gameState.playerID ? "My Turn" : "Opponents Turn"
+  document.querySelector('.game-info__players-turn').innerText = myTurn;
 }
 
 // This function updates the board and whos turn it is.
 var updateBoard = () => {
-  let myTurn = gameState.whosTurn === gameState.playerID ? "My Turn" : "Opponents Turn"
-  document.querySelector('.game-info__players-turn').innerText = myTurn;
 
   let board = gameState.board;
   for(let i = 0; i < board.length; i++) {
@@ -36,6 +40,11 @@ var updateBoard = () => {
       element.classList.add('game-board__cell--red')
     }
   }
+}
+
+var displayWinner = () => {
+  let winner = gameState.whosTurn === gameState.playerID ? "You won" : "You lost"
+  document.querySelector('.game-info__players-turn').innerText = winner;
 }
 
 // This responds to the server push messages
@@ -53,9 +62,18 @@ ws.addEventListener('message', (message) => {
       loadingEl.style.display = 'block';
       gameState.whosTurn = action.whosTurn;
       gameState.board    = action.board;
+      updateTurn();
       updateBoard();
       loadingEl.style.display = 'none';
       break;
+    case 'gameOver':
+      loadingEl.style.display = 'block';
+      gameState.board    = action.board;
+      updateBoard();
+      displayWinner();
+      loadingEl.style.display = 'none';
+      break;
+        
     default:
       console.error("Invalid action");
   }

@@ -29,7 +29,9 @@ protected:
 public:
     void playersMove(const std::string& player, int cellID);
     void resetBoard();
+    nlohmann::json setGameOver();
     nlohmann::json updateClientState();
+    bool isGameOver(const std::string& player);
 
     static TikTakToeGameModel& getGameModel();
 
