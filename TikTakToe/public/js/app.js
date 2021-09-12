@@ -12,6 +12,7 @@ var gameState = {
   board: [0, 0, 0, 0, 0, 0, 0, 0, 0]
 };
 
+let isGameOver = false;
 
 // This fills in the DOM with the initial game state
 var initializeBoard = () => {
@@ -69,6 +70,7 @@ ws.addEventListener('message', (message) => {
     case 'gameOver':
       loadingEl.style.display = 'block';
       gameState.board    = action.board;
+      isGameOver = true;
       updateBoard();
       displayWinner();
       loadingEl.style.display = 'none';
@@ -84,6 +86,7 @@ ws.addEventListener('open', () => {
   document
     .querySelector('.game-board')
     .addEventListener('click', (event) => {
+    if(!isGameOver){
       let element = event.target;
       let message = {
         type:     'move',
@@ -91,5 +94,6 @@ ws.addEventListener('open', () => {
         cellID:   parseInt(element.dataset.id, 10)
       }
       ws.send(JSON.stringify(message));
+    }
     })
 })
